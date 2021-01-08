@@ -81,7 +81,7 @@ def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
     ani = animation.FuncAnimation(fig, animate, steps,
                                   init_func=init, interval=500, blit=True)
 
-    ani.save("gradDes_anim.gif", writer='imagemagick', fps=30)
+    ani.save("a1/gradDes_anim.gif", writer='imagemagick', fps=30)
 
     return None
 
@@ -161,6 +161,6 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
     ani = animation.FuncAnimation(fig, animate, steps,
                                   init_func=init, interval=500, blit=True)
 
-    ani.save("linear_anim.gif", writer='imagemagick', fps=30)
+    ani.save("a1/linear_anim.gif", writer='imagemagick', fps=30)
 
     return None
