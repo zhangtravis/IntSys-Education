@@ -145,7 +145,7 @@ def plot_grad_descent_1d(h, grad_h, loss, dloss, x, y, grad_des,
     ani = animation.FuncAnimation(fig, animate, steps, 
         init_func=init, interval=500, blit=True)
     
-    ani.save("gradDes_anim.gif", writer='imagemagick', fps=30)
+    ani.save("a1/gradDes_anim.gif", writer='imagemagick', fps=30)
 
     return None
 
@@ -224,8 +224,8 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
 
     ani = animation.FuncAnimation(fig, animate, steps,
         init_func=init, interval=500, blit=True)
-    plt.show()
-    #ani.save("linear_anim.gif", writer='imagemagick', fps=30)
+
+    ani.save("a1/linear_anim.gif", writer='imagemagick', fps=30)
 
     return None
 
@@ -382,7 +382,7 @@ def grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     # operations or numpy vectorization
 
     # Ideal Parameter
-    weight = np.random.random_sample(x.shape)
+    weight = np.random.random((1,1))
     # List of ideal parameters through time
     weightList = []
 
@@ -390,7 +390,7 @@ def grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     dataSize = len(x)
 
     # Learning rate
-    alpha = 0.001
+    alpha = 0.01
 
     for _ in range(steps):
         weightList.append(weight)
