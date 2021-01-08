@@ -266,10 +266,10 @@ def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     """
 
     # TODO 2
-    return np.zeros((1,))
 
 
-def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
+
+def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=8):
     """grad_descent: gradient descent algorithm on a hypothesis class.
     This does not use the matrix operations from numpy, this function
     uses the brute force calculations
@@ -300,16 +300,82 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :param x: Input matrix of shape (samples, features)
     :type x: np.ndarray
     :param y: The expected targets our model is attempting to match, of shape (samples, 1)
-    :param y: np.ndarray
+    :type y: np.ndarray
     :param steps: number of steps to take in the gradient descent algorithm
     :type steps: int
+    :param batch_size: Size of each batch
+    :type batch_size: int
     :return: Ideal weights of shape (1, features), and the list of weights through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
 
     # TODO 3: Write the stochastic mini-batch gradient descent algorithm without
     # matrix operations or numpy vectorization
-    return np.zeros((1,))
+    # Ideal Parameter
+    weight = np.random.random_sample((1,1))
+    # List of ideal parameters through time
+    weightList = []
+
+    # Learning rate
+    alpha = 0.01
+
+    for _ in range(steps):
+        weightList.append(weight)
+        # Create minibatches
+        mini_batches = create_mini_batch(x, y, batch_size)
+        for mini_batch in mini_batches:
+            x_mini, y_mini = mini_batch
+            # Calculate gradient of loss with respect to x_mini
+            gradLoss = grad_loss_f(h, grad_h, weight, x_mini, y_mini)
+            # Update weight
+            weight = weight - alpha * 1 / len(mini_batch) * gradLoss
+
+    return weight, np.array(weightList)
+
+def create_mini_batch(x, y, batch_size):
+    """creates mini batches of input x and y. Each batch will have size batch_size
+    :param x: Input matrix of shape (samples, features)
+    :type x: np.ndarray
+    :param y: Groundtruth labels of shape (samples, 1)
+    :type y: np.ndarray
+    :param batch_size: Size of each batch
+    :type batch_size: int
+    :return: List of mini batches for x and y
+    :rtype: [np.ndarray]
+    """
+
+    # Calculate number of batches
+    no_of_batches = x.shape[0] // batch_size
+
+    # stack x and y data together so that during shuffling
+    # corresponding x stays with corresponding y
+    data = np.hstack((x, y))
+
+    # shuffle data
+    np.random.shuffle(data)
+
+    # List of batches
+    mini_batches = []
+
+    for i in range(no_of_batches + 1):
+        # Check if there is enough data to create mini_batch of shape (batch_size, 2)
+        if (i+1) * batch_size > data.shape[0]:
+            # Append rest of data to end of mini_batches
+            # mini_batch has shape smaller (bs, 2) where bs < batch_size
+            mini_batch = data[i * batch_size:]
+        else:
+            # Split data into segments where mini_batch has shape (batch_size, 2)
+            mini_batch = data[i * batch_size:(i+1) * batch_size, :]
+
+        # Split each mini batch to x and y components
+        x_mini_batch = mini_batch[:, :-1]
+        y_mini_batch = mini_batch[:, -1].reshape((-1, 1))
+
+        # Append as a tuple with each element having shape (batch_size, 1)
+        mini_batches.append((x_mini_batch, y_mini_batch))
+
+    return mini_batches
+
 
 
 def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
