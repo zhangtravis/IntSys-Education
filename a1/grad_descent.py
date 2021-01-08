@@ -221,11 +221,11 @@ def plot_linear_1d(h, grad_h, loss, dloss, x, y, grad_des, x_support, y_support)
         text.set_text("Theta Value : {:.2f}".format(theta[0,0]))
         line.set_data(x_range, preds.reshape((-1,)))
         return line, scat, text
-    
-    ani = animation.FuncAnimation(fig, animate, steps, 
+
+    ani = animation.FuncAnimation(fig, animate, steps,
         init_func=init, interval=500, blit=True)
-    
-    ani.save("linear_anim.gif", writer='imagemagick', fps=30)
+    plt.show()
+    #ani.save("linear_anim.gif", writer='imagemagick', fps=30)
 
     return None
 
@@ -375,12 +375,34 @@ def grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     :param y: np.ndarray
     :param steps: number of steps to take in the gradient descent algorithm
     :type steps: int
-    :return: The ideal parameters and the list of paramters through time
+    :return: The ideal parameters and the list of parameters through time
     :rtype: tuple[np.ndarray, np.ndarray]
     """
     # TODO 1: Write the traditional gradient descent algorithm without matrix
     # operations or numpy vectorization
-    # return np.zeros((1,))
+
+    # Ideal Parameter
+    weight = np.random.random_sample(x.shape)
+    # List of ideal parameters through time
+    weightList = []
+
+    # Size of data
+    dataSize = len(x)
+
+    # Learning rate
+    alpha = 0.001
+
+    for _ in range(steps):
+        weightList.append(weight)
+        totalGradLoss = 0
+        # Loop through all the x data
+        for i in range(dataSize):
+            # Calculate and add grad of loss with respect to input data x_i
+            totalGradLoss += grad_loss_f(h, grad_h, weight, x[i], y[i])
+        # Update weight
+        weight = weight - alpha * 1/dataSize * totalGradLoss
+
+    return weight, np.array(weightList)
 
 
 def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
@@ -424,10 +446,10 @@ def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     """
 
     # TODO 2
-    return np.zeros((1,))
 
 
-def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
+
+def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=32):
     """grad_descent: gradient descent algorithm on a hypothesis class.
 
     This does not use the matrix operations from numpy, this function
@@ -469,8 +491,9 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
 
     # TODO 3: Write the stochastic mini-batch gradient descent algorithm without 
     # matrix operations or numpy vectorization
-    return np.zeros((1,))
 
+def create_mini_batch(x, y, batch_size):
+    pass
 
 def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
     """grad_descent: gradient descent algorithm on a hypothesis class.
