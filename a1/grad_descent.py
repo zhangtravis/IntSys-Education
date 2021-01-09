@@ -503,7 +503,25 @@ def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
 
     # TODO 5: Write the stochastic gradient descent algorithm WITH matrix
     # operations or numpy vectorization
-    return np.zeros((1,))
+
+    # Ideal Parameter
+    weight = np.random.random_sample(x.shape)
+    # List of ideal parameters through time
+    weightList = []
+
+    # Learning rate
+    alpha = 0.001
+
+    for _ in range(steps):
+        weightList.append(weight)
+        # Randomly choose element in x
+        idx = np.random.randint(0, len(x))
+        # Calculate gradient of loss with respect to x[idx]
+        gradLoss = grad_loss_f(h, grad_h, weight, x[idx], y[idx])
+        # Update weight
+        weight = weight - alpha * gradLoss
+
+    return weight, np.array(weightList)
 
 
 def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=8):
@@ -612,4 +630,9 @@ def test_gd(grad_des_f):
 
 
 if __name__ == "__main__":
-    save_linear_gif()
+    # save_linear_gif()
+    x = np.arange(-3, 4, 0.1).reshape((-1, 1))
+    y = 2 * np.arange(-3, 4, 0.1).reshape((-1, 1))
+    x_support = np.array((0, 4))
+    y_support = np.array((-0.1, 200))
+    stochastic_grad_descent(linear_h, linear_grad_h, l2_loss, grad_l2_loss, x, y, 500)
