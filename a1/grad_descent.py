@@ -345,10 +345,13 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_si
         mini_batches = create_mini_batch(x, y, batch_size)
         for mini_batch in mini_batches:
             x_mini, y_mini = mini_batch
-            # Calculate gradient of loss with respect to x_mini
-            gradLoss = grad_loss_f(h, grad_h, weight, x_mini, y_mini)
+            # Store total grad loss for a mini batch
+            totalGradMiniLoss = 0
+            for x_i, y_i in x_mini, y_mini:
+                # Calculate gradient of loss with respect to x_mini
+                totalGradMiniLoss += grad_loss_f(h, grad_h, weight, x_i, y_i)
             # Update weight
-            weight = weight - alpha * 1 / len(mini_batch) * gradLoss
+            weight = weight - alpha * 1 / len(mini_batch) * totalGradMiniLoss
 
     return weight, np.array(weightList)
 
@@ -505,12 +508,12 @@ def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     # operations or numpy vectorization
 
     # Ideal Parameter
-    weight = np.random.random_sample(x.shape)
+    weight = np.random.random((1,1))
     # List of ideal parameters through time
     weightList = []
 
     # Learning rate
-    alpha = 0.001
+    alpha = 0.01
 
     for _ in range(steps):
         weightList.append(weight)
