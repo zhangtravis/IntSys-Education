@@ -1,6 +1,7 @@
 """Gradient Descent Assignment for CDS Intelligent Systems."""
 
 import typing
+import random
 
 import numpy as np
 from plotting import plot_grad_descent_1d, plot_linear_1d
@@ -266,6 +267,25 @@ def stochastic_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     """
 
     # TODO 2
+    #initialize weight of h(x)
+    weight = np.random.random((1,x.shape[1]))
+    # List of ideal parameters through time
+    weightList = []
+
+    # Learning rate
+    alpha = 0.01
+
+    for _ in range(steps):
+        weightList.append(weight)
+        # find a sample randomly
+        i = random.randrange(len(x))
+
+        # Calculate gradient of loss with respect to the picked sample
+        gradLoss = grad_loss_f(h, grad_h, weight, x[i], y[i])
+        # Update weight
+        weight = weight - alpha * gradLoss
+
+    return weight, np.array(weightList)
 
 
 
@@ -378,7 +398,9 @@ def create_mini_batch(x, y, batch_size):
 
 
 
-def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
+
+
+def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=8):
     """grad_descent: gradient descent algorithm on a hypothesis class.
     This does not use the matrix operations from numpy, this function
     uses the brute force calculations
@@ -420,7 +442,25 @@ def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
 
     # TODO 4: Write the traditional gradient descent algorithm WITH matrix
     # operations or numpy vectorization
-    return np.zeros((1,))
+    # Ideal Parameter
+    weight = np.random.random_sample((1,1))
+    
+    # List of ideal parameters through time
+    weightList = []
+
+    # Learning rate
+    alpha = 0.01
+
+    # number of samples
+    datasize = len(x)
+
+    for _ in range(steps):
+        #update the weight
+        weight = weight - alpha * grad_loss_f(h, grad_h, weight, x,y)/datasize
+        weightList.append(weight)     
+    
+    return weight, np.array(weightList)
+
 
 
 def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
@@ -466,7 +506,7 @@ def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     return np.zeros((1,))
 
 
-def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size):
+def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=8):
     """matrix_minibatch_gd: Mini-Batch GD using numpy matrix operations
     Stochastic Mini-batch GD with batches of size batch_size using numpy
     operations to speed up all of the operations
@@ -508,7 +548,29 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size)
 
     # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH
     # matrix operations or numpy vectorization
-    return np.zeros((1,))
+    weight = np.random.random((1,x.shape[1]))
+    # List of ideal parameters through time
+    weightList = []
+
+    # Learning rate
+    alpha = 0.01
+
+    for _ in range(steps):
+        weightList.append(weight)
+        # Create minibatches
+        indices = random.sample(range(len(x)), batch_size)
+
+        x_batch = x[indices]
+        y_batch = y[indices]
+        
+        # Calculate gradient of loss with respect to the samples in batch
+        gradLoss = grad_loss_f(h, grad_h, weight, x_batch, y_batch)
+        # Update weight
+        weight = weight - alpha * 1 / batch_size * gradLoss
+
+    return weight, np.array(weightList)
+    
+  
 
 
 # ============================================================================
@@ -528,7 +590,7 @@ def save_linear_gif():
         grad_l2_loss,
         x,
         y,
-        grad_descent,
+        matrix_minibatch_gd,
         x_support,
         y_support
     )
@@ -539,7 +601,7 @@ def save_linear_gif():
         grad_l2_loss,
         x,
         y,
-        grad_descent,
+        matrix_minibatch_gd,
         x_support,
         y_support
     )
