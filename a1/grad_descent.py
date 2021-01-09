@@ -347,8 +347,8 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_si
             x_mini, y_mini = mini_batch
             # Store total grad loss for a mini batch
             totalGradMiniLoss = 0
-            for x_i, y_i in x_mini, y_mini:
-                # Calculate gradient of loss with respect to x_mini
+            for x_i, y_i in zip(x_mini, y_mini):
+                # Calculate gradient of loss with respect to x_i and add it to total grad mini loss
                 totalGradMiniLoss += grad_loss_f(h, grad_h, weight, x_i, y_i)
             # Update weight
             weight = weight - alpha * 1 / len(mini_batch) * totalGradMiniLoss
@@ -638,4 +638,4 @@ if __name__ == "__main__":
     y = 2 * np.arange(-3, 4, 0.1).reshape((-1, 1))
     x_support = np.array((0, 4))
     y_support = np.array((-0.1, 200))
-    stochastic_grad_descent(linear_h, linear_grad_h, l2_loss, grad_l2_loss, x, y, 500)
+    minibatch_grad_descent(linear_h, linear_grad_h, l2_loss, grad_l2_loss, x, y, 500)
