@@ -569,7 +569,7 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=
 
     # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH
     # matrix operations or numpy vectorization
-    weight = np.random.random((1,x.shape[1]))
+        weight = np.random.random((1,x.shape[1]))
     # List of ideal parameters through time
     weightList = []
 
@@ -579,15 +579,14 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=
     for _ in range(steps):
         weightList.append(weight)
         # Create minibatches
-        indices = random.sample(range(len(x)), batch_size)
-
-        x_batch = x[indices]
-        y_batch = y[indices]
-        
-        # Calculate gradient of loss with respect to the samples in batch
-        gradLoss = grad_loss_f(h, grad_h, weight, x_batch, y_batch)
-        # Update weight
-        weight = weight - alpha * 1 / batch_size * gradLoss
+       
+        mini_batches = create_mini_batch(x, y, batch_size)
+        for i in range(len(mini_batches)):
+            x_batch, y_batch = mini_batches[i]
+            # Calculate gradient of loss with respect to the samples in batch
+            gradLoss = grad_loss_f(h, grad_h, weight, x_batch, y_batch)
+            # Update weight
+            weight = weight - alpha * 1 / batch_size * gradLoss
 
     return weight, np.array(weightList)
     
