@@ -205,7 +205,7 @@ def grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     # operations or numpy vectorization
 
     # Ideal Parameter
-    weight = np.random.random((1, 1))
+    weight = np.random.random((1, x.shape[1]))
     # List of ideal parameters through time
     weightList = []
 
@@ -332,7 +332,7 @@ def minibatch_grad_descent(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_si
     # TODO 3: Write the stochastic mini-batch gradient descent algorithm without
     # matrix operations or numpy vectorization
     # Ideal Parameter
-    weight = np.random.random_sample((1,1))
+    weight = np.random.random_sample((1,x.shape[1]))
     # List of ideal parameters through time
     weightList = []
 
@@ -446,7 +446,7 @@ def matrix_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=8):
     # TODO 4: Write the traditional gradient descent algorithm WITH matrix
     # operations or numpy vectorization
     # Ideal Parameter
-    weight = np.random.random_sample((1,1))
+    weight = np.random.random_sample((1,x.shape[1]))
     
     # List of ideal parameters through time
     weightList = []
@@ -508,7 +508,7 @@ def matrix_sgd(h, grad_h, loss_f, grad_loss_f, x, y, steps):
     # operations or numpy vectorization
 
     # Ideal Parameter
-    weight = np.random.random((1,1))
+    weight = np.random.random((1,x.shape[1]))
     # List of ideal parameters through time
     weightList = []
 
@@ -569,7 +569,7 @@ def matrix_minibatch_gd(h, grad_h, loss_f, grad_loss_f, x, y, steps, batch_size=
 
     # TODO 6: Write the stochastic mini-batch gradient descent algorithm WITH
     # matrix operations or numpy vectorization
-        weight = np.random.random((1,x.shape[1]))
+    weight = np.random.random((1, x.shape[1]))
     # List of ideal parameters through time
     weightList = []
 
@@ -632,9 +632,4 @@ def test_gd(grad_des_f):
 
 
 if __name__ == "__main__":
-    # save_linear_gif()
-    x = np.arange(-3, 4, 0.1).reshape((-1, 1))
-    y = 2 * np.arange(-3, 4, 0.1).reshape((-1, 1))
-    x_support = np.array((0, 4))
-    y_support = np.array((-0.1, 200))
-    minibatch_grad_descent(linear_h, linear_grad_h, l2_loss, grad_l2_loss, x, y, 500)
+    save_linear_gif()
