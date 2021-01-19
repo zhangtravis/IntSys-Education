@@ -2,8 +2,10 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
-from torch.nn.parameter import Parameter
+import pandas as pd
+
 from data_loader import get_data_loaders
+from plotting import plot_linear_1D
 
 
 class LinearRegressionModel(nn.Module):
@@ -81,11 +83,11 @@ def mse_loss(output, target):
     """
     ## TODO 3: Implement Mean-Squared Error loss. 
     # Use PyTorch operations to return a PyTorch tensor
-    return nn.functional.mse_loss(output, target) 
+    #return nn.functional.mse_loss(output, target) 
     
-    #diff = output - target
+    diff = output - target
     
-    #return torch.sum(diff * diff) / diff.numel()
+    return torch.sum(diff * diff) / diff.numel()
 
 
 def mae_loss(output, target):
@@ -112,7 +114,8 @@ def mae_loss(output, target):
     """
     ## TODO 4: Implement L1 loss. Use PyTorch operations.
     # Use PyTorch operations to return a PyTorch tensor.
-    return torch.abs(output - target)/output.numel()
+    return torch.sum(torch.abs(output - target))/output.numel()
+    #return nn.functional.l1_loss(output, target)
 
 
 if __name__ == "__main__":
@@ -162,23 +165,23 @@ if __name__ == "__main__":
     ## You don't need to do loss.backward() or optimizer.step() here since you are no
     ## longer training.
 
-    train_loader, val_loader, test_loader = get_data_loaders("data/DS2.csv",
+    train_loader, val_loader, test_loader = get_data_loaders("data/DS1.csv",
         #transform_fn=data_transform
         )
     
-    model = LinearRegressionModel(1, mse_loss)
+    model = LinearRegressionModel(2, mae_loss)
 
-    optimizer = optim.SGD(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
 
     model.train()
-    for t in range(10):
+    for t in range(100):
         
-        for i, (input_t, y) in enumerate(train_loader):
-            optimizer.zero_grad()
+        for i, (input_t, y) in enumerate(train_loader):   
             preds = model(input_t)
             loss = model.loss_f(preds, y)  # You might have to change the shape of things here.
             loss.backward() 
             optimizer.step()
+            optimizer.zero_grad()
 
     
     model.eval()
@@ -187,7 +190,11 @@ if __name__ == "__main__":
         preds = model(input_t)
         loss = model.loss_f(preds, y)
         print(loss)
-        print(model.parameters())
         
+        
+    for x in model.parameters():
+        print(x)
+         
+    
     
     
