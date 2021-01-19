@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+from torch.nn.parameter import Parameter
 from data_loader import get_data_loaders
 
 
@@ -14,10 +15,12 @@ class LinearRegressionModel(nn.Module):
     :type num_param: int
     """
 
-    def __init__(self, num_param):
+    def __init__(self, input_size, loss_func):
         ## TODO 1: Set up network
         super().__init__()
-        pass
+        self.loss_f = loss_func
+        self.fc1 = nn.Linear(input_size, 1)
+              
 
     def forward(self, x):
         """forward generates the predictions for the input
@@ -37,16 +40,21 @@ class LinearRegressionModel(nn.Module):
         :return: The predictions on x
         :rtype: torch.Tensor
         """
-        ## TODO 2: Implement the linear regression on sample x
-        pass
+        
+        #y_pred = torch.matmul(x, self.weight) + self.bias.T
+              
+        return self.fc1(x)
 
 
 def data_transform(sample):
     ## TODO: Define a transform on a given (x, y) sample. This can be used, for example
     ## for changing the feature representation of your data so that Linear regression works
     ## better.
-    x, y = sample
-    return sample  ## You might want to change this
+    
+    #Append x^3 to the beginning of input ?
+    square = [sample[0]*sample[0]*sample[0]]
+    sample2 = np.append(square,sample)
+    return sample2  ## You might want to change this
 
 
 def mse_loss(output, target):
@@ -73,7 +81,11 @@ def mse_loss(output, target):
     """
     ## TODO 3: Implement Mean-Squared Error loss. 
     # Use PyTorch operations to return a PyTorch tensor
-    pass
+    return nn.functional.mse_loss(output, target) 
+    
+    #diff = output - target
+    
+    #return torch.sum(diff * diff) / diff.numel()
 
 
 def mae_loss(output, target):
@@ -100,7 +112,7 @@ def mae_loss(output, target):
     """
     ## TODO 4: Implement L1 loss. Use PyTorch operations.
     # Use PyTorch operations to return a PyTorch tensor.
-    pass
+    return torch.abs(output - target)/output.numel()
 
 
 if __name__ == "__main__":
@@ -150,4 +162,32 @@ if __name__ == "__main__":
     ## You don't need to do loss.backward() or optimizer.step() here since you are no
     ## longer training.
 
-    pass
+    train_loader, val_loader, test_loader = get_data_loaders("data/DS2.csv",
+        #transform_fn=data_transform
+        )
+    
+    model = LinearRegressionModel(1, mse_loss)
+
+    optimizer = optim.SGD(model.parameters(), lr=0.01)
+
+    model.train()
+    for t in range(10):
+        
+        for i, (input_t, y) in enumerate(train_loader):
+            optimizer.zero_grad()
+            preds = model(input_t)
+            loss = model.loss_f(preds, y)  # You might have to change the shape of things here.
+            loss.backward() 
+            optimizer.step()
+
+    
+    model.eval()
+    for batch_index, (input_t, y) in enumerate(test_loader):
+    
+        preds = model(input_t)
+        loss = model.loss_f(preds, y)
+        print(loss)
+        print(model.parameters())
+        
+    
+    
