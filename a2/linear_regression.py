@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 from data_loader import get_data_loaders
-from plotting import plot_linear_1D
+
 
 
 class LinearRegressionModel(nn.Module):
@@ -194,7 +195,42 @@ if __name__ == "__main__":
         
     for x in model.parameters():
         print(x)
-         
     
-    
-    
+    #########plot data2 using the parameter#########
+    data2 = pd.read_csv('data/DS2.csv')
+    data2.columns = ['x', 'y']
+    plt.scatter(data2['x'],data2['y']) 
+    x = np.arange(-5, 5)
+    plt.plot(x, 2.1594*x*x*x + 1.3032*x -1.0227, linestyle='-', c = 'r')
+
+    plt.title('Features2')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.show()
+
+    #########plot data1##############
+    from mpl_toolkits.mplot3d import Axes3D
+    data1 = pd.read_csv('data/DS1.csv')
+    data1.columns = ['x1','x2','y']
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+
+    ax.scatter(data1['x1'],data1['x2'],data1['y'])
+    x = np.linspace(-60,60)
+    y = np.linspace(-50,90)
+
+    X,Y = np.meshgrid(x,y)
+    Z=3.2748*X + 2.5562*Y + 0.3651
+    surf = ax.plot_surface(X, Y, Z)
+
+    ax.set_title('The Features')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('y')
+
+    plt.show()
+            
+        
+        
+        
