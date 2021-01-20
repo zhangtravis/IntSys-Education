@@ -68,7 +68,7 @@ class MultinomialRegressionModel(nn.Module):
         # NOTE: THIS IS A BONUS AND IS NOT EXPECTED FOR YOU TO BE ABLE TO DO
         self.model = nn.Sequential(nn.Linear(num_param, num_classes), nn.Softmax(dim=1))
         self.loss_fn = loss_fn
-H
+
     def forward(self, x):
         """forward generates the predictions for the input
         
