@@ -1,11 +1,9 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torch.nn.functional as F
 import numpy as np
 from data_loader import get_data_loaders
 from plotting import plot_binary_logistic_boundary
-import matplotlib.pyplot as plt
 import pandas as pd
 
 epochs = 100
