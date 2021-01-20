@@ -140,12 +140,7 @@ def cross_entropy_loss(output, target):
     # One hot encode target values
     one_hot_target = to_one_hot_encode(target, classes)
 
-    total_loss = 0
-    for i in range(classes):
-        # Find particular indices of a class i
-        total_loss += torch.sum(one_hot_target*torch.log(output))
-
-    return -total_loss
+    return -torch.sum(one_hot_target*torch.log(output))
 
 def to_one_hot_encode(target, classes):
     """Convert target values to one-hot encoded vector
