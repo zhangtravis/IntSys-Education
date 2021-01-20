@@ -207,3 +207,8 @@ if __name__ == "__main__":
 
     # Train & Evaluate model
     trainAndEvaluate(multiReg, 'data/DS4.csv')
+
+    # Plot data4 using trained model
+    data4 = np.array(pd.read_csv('data/DS4.csv'))
+    x, y = data4[:, :-1], data4[:, -1:]
+    plot_binary_logistic_boundary(multiReg, x, y, (-5, 5), (-5, 5))
