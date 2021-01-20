@@ -4,7 +4,7 @@ import torch.optim as optim
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
+from mpl_toolkits.mplot3d import Axes3D
 from data_loader import get_data_loaders
 
 
@@ -118,6 +118,39 @@ def mae_loss(output, target):
     return torch.sum(torch.abs(output - target))/output.numel()
     #return nn.functional.l1_loss(output, target)
 
+def plot_data2(w1, w2, b):
+    data2 = pd.read_csv('data/DS2.csv')
+    data2.columns = ['x', 'y']
+    plt.scatter(data2['x'],data2['y']) 
+    x = np.arange(-6, 6)
+    plt.plot(x, w1*x*x*x + w2*x +b, linestyle='-', c = 'r')
+
+    plt.title('Features2')
+    plt.xlabel('x')
+    plt.ylabel('y')
+
+    plt.show()
+
+def plot_data1(w1, w2, b):
+    data1 = pd.read_csv('data/DS1.csv')
+    data1.columns = ['x1','x2','y']
+    fig = plt.figure()
+    ax = fig.add_subplot(111,projection='3d')
+
+    ax.scatter(data1['x1'],data1['x2'],data1['y'])
+    x = np.linspace(-60,60)
+    y = np.linspace(-50,90)
+
+    X,Y = np.meshgrid(x,y)
+    Z=w1*X + w2*Y + b
+    surf = ax.plot_surface(X, Y, Z)
+
+    ax.set_title('The Features')
+    ax.set_xlabel('x1')
+    ax.set_ylabel('x2')
+    ax.set_zlabel('y')
+
+    plt.show()
 
 if __name__ == "__main__":
     ## Here you will want to create the relevant dataloaders for the csv files for which 
@@ -166,8 +199,8 @@ if __name__ == "__main__":
     ## You don't need to do loss.backward() or optimizer.step() here since you are no
     ## longer training.
 
-    train_loader, val_loader, test_loader = get_data_loaders("data/DS1.csv",
-        #transform_fn=data_transform
+    train_loader, val_loader, test_loader = get_data_loaders("data/DS2.csv",
+        transform_fn=data_transform
         )
     
     model = LinearRegressionModel(2, mae_loss)
@@ -192,44 +225,23 @@ if __name__ == "__main__":
         loss = model.loss_f(preds, y)
         print(loss)
         
-        
-    for x in model.parameters():
-        print(x)
+    
+    i = iter(model.parameters())
+    w= next(i).detach().numpy()
+    b = next(i).detach().numpy()
+    
+    w1 = w.item((0, 0))
+    w2 = w.item((0, 1))
+    b =  b.item(0) 
+    
     
     #########plot data2 using the parameter#########
-    data2 = pd.read_csv('data/DS2.csv')
-    data2.columns = ['x', 'y']
-    plt.scatter(data2['x'],data2['y']) 
-    x = np.arange(-5, 5)
-    plt.plot(x, 2.1594*x*x*x + 1.3032*x -1.0227, linestyle='-', c = 'r')
-
-    plt.title('Features2')
-    plt.xlabel('x')
-    plt.ylabel('y')
-
-    plt.show()
+    plot_data2(w1, w2, b)
 
     #########plot data1##############
-    from mpl_toolkits.mplot3d import Axes3D
-    data1 = pd.read_csv('data/DS1.csv')
-    data1.columns = ['x1','x2','y']
-    fig = plt.figure()
-    ax = fig.add_subplot(111,projection='3d')
-
-    ax.scatter(data1['x1'],data1['x2'],data1['y'])
-    x = np.linspace(-60,60)
-    y = np.linspace(-50,90)
-
-    X,Y = np.meshgrid(x,y)
-    Z=3.2748*X + 2.5562*Y + 0.3651
-    surf = ax.plot_surface(X, Y, Z)
-
-    ax.set_title('The Features')
-    ax.set_xlabel('x1')
-    ax.set_ylabel('x2')
-    ax.set_zlabel('y')
-
-    plt.show()
+    #plot_data1(w1, w2, b)
+    
+    
             
         
         
