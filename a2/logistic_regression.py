@@ -8,7 +8,7 @@ from plotting import plot_binary_logistic_boundary
 import matplotlib.pyplot as plt
 import pandas as pd
 
-TOTAL_TIME_STEPS = 100
+epochs = 100
 
 class LogisticRegressionModel(nn.Module):
     """LogisticRegressionModel is the logistic regression classifier.
@@ -176,7 +176,7 @@ def trainAndEvaluate(model, path_to_file):
 
     model.train()
     print('Training model...')
-    for t in range(TOTAL_TIME_STEPS):
+    for t in range(epochs):
 
         for i, (input_t, y) in enumerate(train_loader):
             preds = model(input_t)
