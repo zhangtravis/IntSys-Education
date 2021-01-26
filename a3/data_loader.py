@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
 import torch
-
+from torch import Tensor
 
 class SimpleDataset(Dataset):
     """SimpleDataset [summary]
@@ -57,11 +57,11 @@ class SimpleDataset(Dataset):
         ## Remember to convert the x and y into torch tensors.
 
         x = np.array(self.images[index])
+        
         y = np.array(self.labels[index])
-
-        x, y = torch.tensor(x, dtype=torch.float), torch.tensor(y, dtype=torch.float)
-
-        return x, y
+        y = torch.tensor(y, dtype=torch.float)
+        x = Tensor(x).view(1, 28, 28).float()
+        return x , y
 
 
 def get_data_loaders(path_to_pkl, 
