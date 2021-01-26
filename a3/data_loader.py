@@ -1,8 +1,8 @@
-import csv
 import os
-
+import pickle
 import numpy as np
 from torch.utils.data import Dataset, DataLoader, SubsetRandomSampler
+import torch
 
 
 class SimpleDataset(Dataset):
@@ -22,7 +22,13 @@ class SimpleDataset(Dataset):
         # with open('path/to/.csv', 'r') as f:
         #   lines = ...
         ## Look up how to read .csv files using Python. This is common for datasets in projects.
-        pass
+
+        # Load images
+        with open(path_to_pkl, 'rb') as file:
+            self.images = pickle.load(file)
+        # Load labels
+        with open(path_to_labels, 'rb') as file:
+            self.labels = pickle.load(file)
 
     def __len__(self):
         """__len__ [summary]
@@ -30,7 +36,7 @@ class SimpleDataset(Dataset):
         [extended_summary]
         """
         ## TODO: Returns the length of the dataset.
-        pass
+        return len(self.images)
 
     def __getitem__(self, index):
         """__getitem__ [summary]
@@ -50,7 +56,12 @@ class SimpleDataset(Dataset):
         #   sample = self.transform(sample)
         ## Remember to convert the x and y into torch tensors.
 
-        pass
+        x = np.array(self.images[index])
+        y = np.array(self.labels[index])
+
+        x, y = torch.tensor(x, dtype=torch.float), torch.tensor(y, dtype=torch.float)
+
+        return x, y
 
 
 def get_data_loaders(path_to_pkl, 
@@ -81,9 +92,18 @@ def get_data_loaders(path_to_pkl,
     ## are formed. You can take your code from last time
 
     ## BEGIN: YOUR CODE
-    train_indices = []
-    val_indices = []
-    test_indices = []
+    train_split, validation_split, test_split = train_val_test[0], train_val_test[1], train_val_test[2]
+    # Generate split between train and test data
+    train_test_split = int(np.floor(train_split * dataset_size))
+    # Shuffle indices
+    np.random.shuffle(indices)
+    # Generate split within train data for train and val data (train_val_split has 80% of train_val_data for training, 20% of train_val_data for val data
+    train_val_split = int(np.floor(train_split * train_test_split))
+    # Generate list of indices for train and test data
+    train_val_indices = indices[:train_test_split]
+    train_indices = train_val_indices[:train_val_split]
+    val_indices = train_val_indices[train_val_split:]
+    test_indices = indices[train_test_split:]
     ## END: YOUR CODE
 
     # Now, we define samplers for each of the train, val and test data
@@ -97,3 +117,16 @@ def get_data_loaders(path_to_pkl,
     test_loader = DataLoader(dataset, batch_size=batch_size, sampler=test_sampler)
 
     return train_loader, val_loader, test_loader
+
+if __name__ == '__main__':
+    # Testing purposes
+    train_loader, val_loader, test_data = get_data_loaders('data/processedImages.pkl', 'data/processedLabels.pkl')
+
+    for batch_index, (x, y) in enumerate(train_loader):
+        print(f"Batch {batch_index}")
+        print(f"X: {x.shape}")
+        print(f"Y: {y.shape}")
+
+        if batch_index == 1000:
+            break
+
