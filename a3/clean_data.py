@@ -36,7 +36,6 @@ def processData(images, labels):
                    135: [56],
                    90: [1, 11, 13, 18, 19, 24, 25, 26, 29, 30, 31, 34, 42, 50, 51, 53, 55, 58, 59]}
 
-    # TODO: Not sure about image index 4
     # 0: T-shirt/top; 1: Trouser; 2: Pullover; 3: Dress; 4: Coat; 5: Sandal; 6: Shirt; 7: Sneaker; 8: Bag; 9: Ankle boot
     labelAnnotate = {0: [1, 17, 48, 55], 1: [21, 38], 2: [5], 3: [3, 4, 20, 25, 51], 4: [18, 22, 24, 28, 53], 5: [8, 9, 13, 43],
                      6: [29, 37, 39], 7: [6, 14, 41, 46], 8: [23, 35, 57], 9: [11, 15, 36, 42, 44]}
@@ -63,17 +62,16 @@ def transformImages(images):
     :return: List(PIL.Image.Image)
     """
 
-    
-    # TODO: What about resizing images when the original image is tiny (8,8)?
     for i in range(len(images)):
-        if images[i].size[0]== 28 and images[i].size[1]!= 28:
-            padding = (images[i].size[1] - 28)/2
-            images[i] = images[i].crop((0,padding,28,images[i].size[1]-padding))
-        elif images[i].size[0]!= 28 and images[i].size[1]== 28:
-            padding = (images[i].size[0] - 28)/2
-            images[i] = images[i].crop((padding,0,images[i].size[0]-padding,28))
-        else:
-            images[i] = images[i].resize((28, 28))
+        width, height = images[i].size
+        if width != 28 or height != 28:
+            # Resize image if width and height are same
+            if images[i].size[0] == images[i].size[1]:
+                images[i] = images[i].resize((28, 28))
+            # Crop out padding if width and height are not the same
+            else:
+                widthDiff, heightDiff = (width - 28)/2, (height - 28)/2
+                images[i] = images[i].crop((widthDiff, heightDiff, width - widthDiff, height - heightDiff))
 
     return images
 
