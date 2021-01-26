@@ -63,10 +63,16 @@ def transformImages(images):
     :return: List(PIL.Image.Image)
     """
 
-    # TODO: Should we be cropping the images that are bigger than (28, 28) instead of resizing?
+    
     # TODO: What about resizing images when the original image is tiny (8,8)?
     for i in range(len(images)):
-        if images[i].size != (28, 28):
+        if images[i].size[0]== 28 and images[i].size[1]!= 28:
+            padding = (images[i].size[1] - 28)/2
+            images[i] = images[i].crop((0,padding,28,images[i].size[1]-padding))
+        elif images[i].size[0]!= 28 and images[i].size[1]== 28:
+            padding = (images[i].size[0] - 28)/2
+            images[i] = images[i].crop((padding,0,images[i].size[0]-padding,28))
+        else:
             images[i] = images[i].resize((28, 28))
 
     return images
