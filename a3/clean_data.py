@@ -19,7 +19,7 @@ def load_pickle_file(path_to_file):
 
     return data
 
-def process_data(images, labels):
+def processData(images, labels):
     """
     Rotates images and manually assigns missing labels
     :param images: Images to preprocess
@@ -104,7 +104,7 @@ if __name__ == "__main__":
     images = load_pickle_file('data/images.pkl')
     labels = load_pickle_file('data/labels.pkl')
 
-    processedImages, processedLabels = process_data(images, labels)
+    processedImages, processedLabels = processData(images, labels)
     processedImages = transformImages(processedImages)
 
     with open('data/processedImages.pkl', 'wb') as f:
