@@ -24,12 +24,13 @@ class SimpleNeuralNetModel(nn.Module):
         # hidden layer sizes
         self.seq = torch.nn.Sequential()
         
-        for i in range(len(layer_sizes)-3):
-            self.seq.add_module("l"+str(i), nn.Linear(layer_sizes[i],layer_sizes[i]+1))
-            self.seq.add_module("relu_"+str(i), torch.nn.ReLU())
+        self.seq.add_module("l0", nn.Linear(layer_sizes[0],layer_sizes[1]))
+        for i in range(len(layer_sizes)-2):
+            self.seq.add_module("relu_"+str(i+1), nn.LeakyReLU(0.1))
+            self.seq.add_module("l"+str(i+1), nn.Linear(layer_sizes[i+1],layer_sizes[i+2]))
         
-        self.seq.add_module("l"+str(len(layer_sizes)-1), nn.Linear(layer_sizes[len(layer_sizes)-2],layer_sizes[len(layer_sizes)-1]))
-    
+
+
     def forward(self, x):
         """forward generates the prediction for the input x.
         
@@ -39,7 +40,8 @@ class SimpleNeuralNetModel(nn.Module):
         :rtype: np.ndarray
         """
         #need to reshape the size of the array
-        x = torch.squeeze(x)
+        [width,height] = [x.shape[2], x.shape[3]]
+        x = x.reshape(x.shape[0], width*height)
         return self.seq(x)
 
 
@@ -139,4 +141,4 @@ if __name__ == "__main__":
     NN_model = SimpleNeuralNetModel([28*28, 128, 64, 10])
     # Train & evaluate model
     #trainAndEvaluate(CNN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 10)
-    trainAndEvaluate(NN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 10)
+    trainAndEvaluate(NN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 30)
