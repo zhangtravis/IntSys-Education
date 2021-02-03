@@ -93,6 +93,8 @@ class SentimentDataset(Dataset):
         data['tokstem'] = data['phrase'].apply(token_stem_stop)
         data['class'] = data['label'].apply(classDesignation)
 
+        return data
+
     def __len__(self):
         """__len__ [summary]
         
