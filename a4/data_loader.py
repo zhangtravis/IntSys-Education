@@ -8,13 +8,11 @@ from torchtext import data
 import pandas as pd
 import re
 
-import TFIDF
 
-from collections import Counter 
 
 import nltk
 # word tokenization
-#nltk.download('punkt')
+nltk.download('punkt')
 from nltk.tokenize import word_tokenize
 
 # Stemming
@@ -22,12 +20,12 @@ from nltk.stem import PorterStemmer
 ps = PorterStemmer()
 
 # Lemmatization
-#nltk.download('wordnet')
+nltk.download('wordnet')
 from nltk.stem import WordNetLemmatizer
 wordnet_lemmatizer = WordNetLemmatizer()
 
 # stopwords
-#nltk.download('stopwords')
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 stop_words = set(stopwords.words('english'))
 
@@ -114,13 +112,10 @@ def get_data_loaders(path_to_train, path_to_val, path_to_test,
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
     return train_loader, val_loader, test_loader
-       
 
 if __name__ == '__main__':
-
-    
     # Testing purposes
-    train_loader, val_loader, test_data = get_data_loaders('data/train.csv', 'data/val.csv', 'data/test.csv')
+    train_loader, val_loader, test_data = get_data_loaders('pt_data/train.csv', 'pval_data/val.csv', 'ptest_data/test.csv')
 
     for batch_index, (x, y) in enumerate(train_loader):
         print(f"Batch {batch_index}")
