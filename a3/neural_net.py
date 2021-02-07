@@ -62,20 +62,25 @@ class SimpleConvNetModel(nn.Module):
         # the input size should be and you have to determine the best way to
         # represent the output_shape (tuple of 2 ints, tuple of 1 int, just an
         # int , etc).
-        self.img_shape = img_shape
-        self.output_shape = output_shape
-        # convolutional layers
-        self.conv1 = nn.Conv2d(1, 8, 3, padding=1)
-        self.conv2 = nn.Conv2d(8, 16, 3, padding =1)
-        # linear layers
-        self.fc1 = nn.Linear(int(img_shape[0]*img_shape[1]), 256)
-        self.fc2 = nn.Linear(256, 128)
-        self.fc3 = nn.Linear(128, 64)
-        self.fc4 = nn.Linear(64, output_shape) 
-        # dropout
-        self.dropout = nn.Dropout(p=0.2)
-        # max pooling
-        self.pool = nn.MaxPool2d(2, 2)
+
+        self.convlayer1 = nn.Sequential(
+            nn.Conv2d(1, 32, 3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+
+        self.convlayer2 = nn.Sequential(
+            nn.Conv2d(32, 64, 3),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+
+        self.fc1 = nn.Linear(64 * 6 * 6, 600)
+        self.drop = nn.Dropout2d(0.25)
+        self.fc2 = nn.Linear(600, 120)
+        self.fc3 = nn.Linear(120, 10)
     
     def forward(self, x):
         """forward generates the prediction for the input x.
@@ -86,17 +91,16 @@ class SimpleConvNetModel(nn.Module):
         :rtype: np.ndarray
         """
         # convolutional layers with ReLU and pooling
-        
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        # flattening the image
-        x = x.view(-1, int(self.img_shape[0]*self.img_shape[1]))
-        # linear layers
-        x = self.dropout(F.relu(self.fc1(x)))
-        x = self.dropout(F.relu(self.fc2(x)))
-        x = self.dropout(F.relu(self.fc3(x)))
-        x = self.fc4(x)
-        return x
+
+        x = self.convlayer1(x)
+        x = self.convlayer2(x)
+        x = x.view(-1, 64 * 6 * 6)
+        x = self.fc1(x)
+        x = self.drop(x)
+        x = self.fc2(x)
+        x = self.fc3(x)
+
+        return F.log_softmax(x, dim=1)
 
 def trainAndEvaluate(model, path_to_pkl, path_to_label, epochs):
     """ Trains and evaluates the model
@@ -109,7 +113,7 @@ def trainAndEvaluate(model, path_to_pkl, path_to_label, epochs):
     train_loader, val_loader, test_loader = get_data_loaders(path_to_pkl, path_to_label)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(model.parameters(), lr=0.01)
+    optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     model.train()
     print('Training model...')
@@ -140,5 +144,5 @@ if __name__ == "__main__":
     CNN_model = SimpleConvNetModel((28,28), 10)
     NN_model = SimpleNeuralNetModel([28*28, 128, 64, 10])
     # Train & evaluate model
-    #trainAndEvaluate(CNN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 10)
+    trainAndEvaluate(CNN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 10)
     trainAndEvaluate(NN_model, 'data/processedImages.pkl', 'data/processedLabels.pkl', 30)
