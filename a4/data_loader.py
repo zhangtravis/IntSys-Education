@@ -8,6 +8,8 @@ from torchtext import data
 import pandas as pd
 import re
 
+
+
 import nltk
 # word tokenization
 nltk.download('punkt')
@@ -55,45 +57,10 @@ class SentimentDataset(Dataset):
         ## TODO: Initialise the dataset given the path to the dataset directory.
         ## You may want to include other parameters, totally your choice.
 
-        inputData = pd.read_csv(path_to_data)
-        self.data = self.preprocessData(inputData)
+        self.data = pd.read_csv(path_to_data)
 
         self.transform = transform_fn
 
-    def preprocessData(self, data):
-
-        def clean(data):
-            data = re.sub('[^A-Za-z" "]+', '',
-                            data)  # Removes all special characters and numericals leaving the alphabets and the quotation marks("")
-            data = re.sub('[""]+', '', data)  # removes the quotation marks("")
-            return data
-
-        def token_stem_stop(string):
-            stem_rew = " "
-            tokens = word_tokenize(string)  # word tokenization
-            for word in tokens:
-                if word.lower() not in stop_words:  # removing stop words
-                    stem_word = ps.stem(word)  # stemming
-                    stem_rew = stem_rew + " " + stem_word
-            return str(stem_rew)
-
-        def classDesignation(score):
-            if score <= 0.2:
-                return 'Very Negative'
-            elif score <= 0.4:
-                return 'Negative'
-            elif score <= 0.6:
-                return 'Neutral'
-            elif score <= 0.8:
-                return 'Positive'
-            else:
-                return 'Very Positive'
-
-        data['phrase'] = data['phrase'].apply(clean)
-        data['tokstem'] = data['phrase'].apply(token_stem_stop)
-        data['class'] = data['label'].apply(classDesignation)
-
-        return data
 
     def __len__(self):
         """__len__ [summary]
@@ -121,14 +88,14 @@ class SentimentDataset(Dataset):
         #   sample = self.transform(sample)
         ## Remember to convert the x and y into torch tensors.
 
-        sample = self.data[index]
+        sample = self.data.iloc[index]
         # sample = torch.tensor(sample, dtype=torch.float)
 
         if self.transform:
-            sample = self.transform(sample)
+            sample['tokstem'] = self.transform(sample['tokstem'])
 
         # Return x and y in sample
-        return sample[2], sample[1]
+        return torch.tensor(sample['tokstem'], dtype=torch.float), torch.tensor(sample['class'], dtype=torch.float)
 
 def get_data_loaders(path_to_train, path_to_val, path_to_test,
                      batch_size=32, transform_fn=None):
@@ -148,7 +115,7 @@ def get_data_loaders(path_to_train, path_to_val, path_to_test,
 
 if __name__ == '__main__':
     # Testing purposes
-    train_loader, val_loader, test_data = get_data_loaders('data/train.csv', 'data/val.csv', 'data/test.csv')
+    train_loader, val_loader, test_data = get_data_loaders('pt_data/train.csv', 'pval_data/val.csv', 'ptest_data/test.csv')
 
     for batch_index, (x, y) in enumerate(train_loader):
         print(f"Batch {batch_index}")
